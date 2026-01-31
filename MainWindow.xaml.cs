@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -14,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace GotifyClient
@@ -69,7 +69,7 @@ namespace GotifyClient
         private void InitializeSystemTray()
         {
             notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = SystemIcons.Information;
+            notifyIcon.Icon = System.Drawing.SystemIcons.Information;
             notifyIcon.Text = "Gotify Client";
             notifyIcon.Visible = false;
 
@@ -98,7 +98,7 @@ namespace GotifyClient
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
-            if (WindowState == WindowState.Minimized && MinimizeToTrayMenuItem.IsChecked)
+            if (WindowState == WindowState.Minimized && MinimizeToTrayMenuItem.IsChecked == true)
             {
                 Hide();
                 notifyIcon.Visible = true;
@@ -107,7 +107,7 @@ namespace GotifyClient
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (MinimizeToTrayMenuItem.IsChecked)
+            if (MinimizeToTrayMenuItem.IsChecked == true)
             {
                 e.Cancel = true;
                 WindowState = WindowState.Minimized;
@@ -362,8 +362,9 @@ namespace GotifyClient
             Dispatcher.Invoke(() =>
             {
                 StatusTextBlock.Text = connected ? "Connecté" : "Déconnecté";
-                StatusIndicator.Fill = connected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981")) : 
-                                                  new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
+                StatusIndicator.Fill = connected
+                    ? new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#10B981"))
+                    : new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#EF4444"));
             });
         }
 
@@ -382,12 +383,12 @@ namespace GotifyClient
 
         private void ToggleSoundNotification_Click(object sender, RoutedEventArgs e)
         {
-            soundNotificationsEnabled = SoundNotificationMenuItem.IsChecked;
+            soundNotificationsEnabled = SoundNotificationMenuItem.IsChecked == true;
         }
 
         private void ToggleWindowsNotification_Click(object sender, RoutedEventArgs e)
         {
-            windowsNotificationsEnabled = WindowsNotificationMenuItem.IsChecked;
+            windowsNotificationsEnabled = WindowsNotificationMenuItem.IsChecked == true;
         }
 
         private void QuitApp_Click(object sender, RoutedEventArgs e)
