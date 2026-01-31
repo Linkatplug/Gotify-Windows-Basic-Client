@@ -3,6 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <SolidColorBrush x:Key="AppBackground" Color="#111827"/>
+        <SolidColorBrush x:Key="HeaderBackground" Color="#1F2937"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#1F2937"/>
+        <SolidColorBrush x:Key="CardHover" Color="#374151"/>
+        <SolidColorBrush x:Key="PanelBackground" Color="#0F172A"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#374151"/>
+        <SolidColorBrush x:Key="PrimaryText" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="SecondaryText" Color="#D1D5DB"/>
+        <SolidColorBrush x:Key="MutedText" Color="#9CA3AF"/>
+        <SolidColorBrush x:Key="SubtleButton" Color="#374151"/>
+        <SolidColorBrush x:Key="SubtleButtonHover" Color="#4B5563"/>
+        <SolidColorBrush x:Key="Accent" Color="#6366F1"/>
     </Application.Resources>
 </Application>

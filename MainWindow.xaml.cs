@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -14,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace GotifyClient
@@ -53,6 +53,22 @@ namespace GotifyClient
             timer.Start();
         }
 
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(serverUrl) && !string.IsNullOrEmpty(clientToken))
+            {
+                try
+                {
+                    await ConnectWebSocket();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Connexion automatique échouée: {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    UpdateConnectionStatus(false);
+                }
+            }
+        }
+
         private void RefreshRelativeTimes()
         {
             foreach (var message in messages)
@@ -69,7 +85,7 @@ namespace GotifyClient
         private void InitializeSystemTray()
         {
             notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = SystemIcons.Information;
+            notifyIcon.Icon = System.Drawing.SystemIcons.Information;
             notifyIcon.Text = "Gotify Client";
             notifyIcon.Visible = false;
 
@@ -98,7 +114,7 @@ namespace GotifyClient
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
-            if (WindowState == WindowState.Minimized && MinimizeToTrayMenuItem.IsChecked)
+            if (WindowState == WindowState.Minimized && MinimizeToTrayMenuItem.IsChecked == true)
             {
                 Hide();
                 notifyIcon.Visible = true;
@@ -107,7 +123,7 @@ namespace GotifyClient
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (MinimizeToTrayMenuItem.IsChecked)
+            if (MinimizeToTrayMenuItem.IsChecked == true)
             {
                 e.Cancel = true;
                 WindowState = WindowState.Minimized;
@@ -303,6 +319,12 @@ namespace GotifyClient
                     {
                         var messageJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         var message = JsonSerializer.Deserialize<GotifyMessage>(messageJson);
+                        if (message == null)
+                        {
+                            continue;
+                        }
+
+                        message.UpdateRelativeTime();
                         
                         // Injecter le nom de l'application si disponible
                         if (applicationNames.ContainsKey(message.appid))
@@ -362,8 +384,9 @@ namespace GotifyClient
             Dispatcher.Invoke(() =>
             {
                 StatusTextBlock.Text = connected ? "Connecté" : "Déconnecté";
-                StatusIndicator.Fill = connected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981")) : 
-                                                  new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
+                StatusIndicator.Fill = connected
+                    ? new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#10B981"))
+                    : new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#EF4444"));
             });
         }
 
@@ -382,12 +405,12 @@ namespace GotifyClient
 
         private void ToggleSoundNotification_Click(object sender, RoutedEventArgs e)
         {
-            soundNotificationsEnabled = SoundNotificationMenuItem.IsChecked;
+            soundNotificationsEnabled = SoundNotificationMenuItem.IsChecked == true;
         }
 
         private void ToggleWindowsNotification_Click(object sender, RoutedEventArgs e)
         {
-            windowsNotificationsEnabled = WindowsNotificationMenuItem.IsChecked;
+            windowsNotificationsEnabled = WindowsNotificationMenuItem.IsChecked == true;
         }
 
         private void QuitApp_Click(object sender, RoutedEventArgs e)
@@ -434,7 +457,7 @@ namespace GotifyClient
         public string AppId => !string.IsNullOrEmpty(ApplicationName) ? ApplicationName : $"App #{appid}";
         public string Title => title ?? "Sans titre";
         public string Message => message ?? "";
-        public string DateFormatted => date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss");
+        public string DateFormatted => GetLocalDate().ToString("dd/MM/yyyy HH:mm:ss");
         
         public string PriorityColor
         {
@@ -472,7 +495,7 @@ namespace GotifyClient
         public void UpdateRelativeTime()
         {
             var now = DateTime.Now;
-            var localDate = date.ToLocalTime();
+            var localDate = GetLocalDate();
             var diff = now - localDate;
 
             if (diff.TotalMinutes < 1)
@@ -485,6 +508,17 @@ namespace GotifyClient
                 RelativeTime = $"Il y a {(int)diff.TotalDays}j";
             else
                 RelativeTime = localDate.ToString("dd/MM");
+        }
+
+        private DateTime GetLocalDate()
+        {
+            var sourceDate = date;
+            if (sourceDate.Kind == DateTimeKind.Unspecified)
+            {
+                sourceDate = DateTime.SpecifyKind(sourceDate, DateTimeKind.Utc);
+            }
+
+            return sourceDate.ToLocalTime();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
