@@ -53,6 +53,22 @@ namespace GotifyClient
             timer.Start();
         }
 
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(serverUrl) && !string.IsNullOrEmpty(clientToken))
+            {
+                try
+                {
+                    await ConnectWebSocket();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Connexion automatique échouée: {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    UpdateConnectionStatus(false);
+                }
+            }
+        }
+
         private void RefreshRelativeTimes()
         {
             foreach (var message in messages)
@@ -303,6 +319,12 @@ namespace GotifyClient
                     {
                         var messageJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         var message = JsonSerializer.Deserialize<GotifyMessage>(messageJson);
+                        if (message == null)
+                        {
+                            continue;
+                        }
+
+                        message.UpdateRelativeTime();
                         
                         // Injecter le nom de l'application si disponible
                         if (applicationNames.ContainsKey(message.appid))
@@ -435,7 +457,7 @@ namespace GotifyClient
         public string AppId => !string.IsNullOrEmpty(ApplicationName) ? ApplicationName : $"App #{appid}";
         public string Title => title ?? "Sans titre";
         public string Message => message ?? "";
-        public string DateFormatted => date.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss");
+        public string DateFormatted => GetLocalDate().ToString("dd/MM/yyyy HH:mm:ss");
         
         public string PriorityColor
         {
@@ -473,7 +495,7 @@ namespace GotifyClient
         public void UpdateRelativeTime()
         {
             var now = DateTime.Now;
-            var localDate = date.ToLocalTime();
+            var localDate = GetLocalDate();
             var diff = now - localDate;
 
             if (diff.TotalMinutes < 1)
@@ -486,6 +508,17 @@ namespace GotifyClient
                 RelativeTime = $"Il y a {(int)diff.TotalDays}j";
             else
                 RelativeTime = localDate.ToString("dd/MM");
+        }
+
+        private DateTime GetLocalDate()
+        {
+            var sourceDate = date;
+            if (sourceDate.Kind == DateTimeKind.Unspecified)
+            {
+                sourceDate = DateTime.SpecifyKind(sourceDate, DateTimeKind.Utc);
+            }
+
+            return sourceDate.ToLocalTime();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
