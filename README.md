@@ -1,108 +1,104 @@
 # Gotify Windows Client
 
-Client Windows natif en C# WPF pour recevoir des notifications depuis un serveur Gotify.
+Native Windows client in C# WPF to receive notifications from a Gotify server.
 
-## Fonctionnalités
+## Features
 
-- ✅ Connexion au serveur Gotify via WebSocket
-- ✅ Réception des notifications en temps réel
-- ✅ Notifications Windows natives (balloon tips)
-- ✅ Icône dans la barre système (system tray)
-- ✅ Minimisation automatique vers la barre système
-- ✅ Liste des messages reçus
-- ✅ Sauvegarde automatique de la configuration
+- ✅ WebSocket connection to Gotify
+- ✅ Real-time notification reception
+- ✅ Native Windows notifications (balloon tips)
+- ✅ System tray icon
+- ✅ Automatic minimize-to-tray
+- ✅ Received message list
+- ✅ Automatic configuration persistence
 
-## Prérequis
+## Requirements
 
 - Windows 10/11
-- .NET 6.0 Runtime ou SDK
-- Serveur Gotify avec un token client
+- .NET 6.0 Runtime or SDK
+- A Gotify server with a client token
 
 ## Installation
 
-### Option 1 : Compiler depuis les sources
+### Option 1: Build from source
 
-1. Installez [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+1. Install the [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+2. Open a terminal in the project directory
+3. Build the project:
 
-2. Ouvrez un terminal dans le dossier du projet
-
-3. Compilez le projet :
 ```bash
 dotnet build -c Release
 ```
 
-4. L'exécutable sera dans : `bin/Release/net6.0-windows/GotifyClient.exe`
+The executable will be in: `bin/Release/net6.0-windows/GotifyClient.exe`
 
-### Option 2 : Publier une version autonome
+### Option 2: Publish a self-contained build
 
-Pour créer un exécutable qui n'a pas besoin de .NET installé :
+To create a standalone executable that does not require .NET to be installed:
 
 ```bash
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
-L'exécutable sera dans : `bin/Release/net6.0-windows/win-x64/publish/GotifyClient.exe`
+The executable will be in: `bin/Release/net6.0-windows/win-x64/publish/GotifyClient.exe`
 
-## Utilisation
+## Usage
 
-1. Lancez `GotifyClient.exe`
+1. Launch `GotifyClient.exe`
+2. Configure the connection:
+   - **Server URL**: The URL of your Gotify server (e.g. `https://gotify.example.com`)
+   - **Client Token**: Your client application token (create it in the Gotify UI)
+3. Click "Connect"
+4. The app connects and starts receiving notifications
 
-2. Configurez la connexion :
-   - **Server URL** : L'URL de votre serveur Gotify (ex: `https://gotify.example.com`)
-   - **Client Token** : Votre token d'application client (à créer dans l'interface Gotify)
+### Get a client token
 
-3. Cliquez sur "Connecter"
-
-4. L'application se connecte et commence à recevoir les notifications
-
-### Obtenir un token client
-
-1. Connectez-vous à votre interface web Gotify
-2. Allez dans **Applications**
-3. Créez une nouvelle application
-4. Copiez le **token** généré
-5. Collez-le dans le champ "Client Token" de l'application
+1. Sign in to your Gotify web UI
+2. Go to **Applications**
+3. Create a new application
+4. Copy the generated **token**
+5. Paste it into the "Client Token" field in the app
 
 ## Configuration
 
-La configuration (URL du serveur et token) est sauvegardée automatiquement dans le fichier `gotify_config.json` dans le même dossier que l'exécutable.
+The configuration (server URL and token) is saved automatically to `gotify_config.json` in the same folder as the executable.
 
-## Fonctionnement
+## Behavior
 
-- **Minimiser vers la barre système** : Cochez cette option pour que l'application se minimise dans la barre système au lieu de la barre des tâches
-- **Double-clic sur l'icône** : Restaure la fenêtre
-- **Clic droit sur l'icône** : Affiche le menu contextuel (Ouvrir/Quitter)
-- **Effacer les messages** : Supprime l'historique des messages affichés (ne supprime pas les messages du serveur)
+- **Minimize to tray**: Enable this option to minimize the app to the system tray instead of the taskbar
+- **Double-click the tray icon**: Restores the window
+- **Right-click the tray icon**: Shows the context menu (Open/Quit)
+- **Clear messages**: Removes the displayed message history (does not delete messages on the server)
 
-## Dépannage
+## Troubleshooting
 
-### L'application ne se connecte pas
+### The app cannot connect
 
-- Vérifiez que l'URL du serveur est correcte (avec https:// ou http://)
-- Vérifiez que le token est valide
-- Assurez-vous que le serveur Gotify est accessible depuis votre réseau
-- Vérifiez que le port WebSocket est ouvert (généralement le même que HTTP/HTTPS)
+- Ensure the server URL is correct (including `https://` or `http://`)
+- Verify the token is valid
+- Confirm the Gotify server is reachable from your network
+- Ensure the WebSocket port is open (usually the same as HTTP/HTTPS)
 
-### Les notifications n'apparaissent pas
+### Notifications do not appear
 
-- Vérifiez que les notifications Windows sont activées dans les paramètres système
-- Testez en envoyant un message depuis l'interface web Gotify
+- Confirm Windows notifications are enabled in system settings
+- Test by sending a message from the Gotify web UI
 
-### Erreur de certificat SSL
+### SSL certificate error
 
-Si vous utilisez un certificat auto-signé, vous devrez peut-être modifier le code pour accepter les certificats non valides (non recommandé en production).
+If you use a self-signed certificate, you may need to update the code to accept invalid certificates (not recommended for production).
 
-## Technologies utilisées
+## Technologies used
 
 - C# / .NET 6
 - WPF (Windows Presentation Foundation)
-- WebSocket pour la connexion temps réel
-- System.Windows.Forms pour l'icône système
+- WebSocket for real-time connectivity
+- System.Windows.Forms for the tray icon
 
-## Licence
+## License
 
-MIT License - Libre d'utilisation et modification
+MIT License - Free to use and modify
 
 ## Support
 
-Pour signaler un bug ou demander une fonctionnalité, créez une issue sur le dépôt GitHub.
+To report a bug or request a feature, open an issue on the GitHub repository.
