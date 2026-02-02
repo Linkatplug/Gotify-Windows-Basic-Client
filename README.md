@@ -2,14 +2,6 @@
 
 Native Windows client in C# WPF to receive notifications from a Gotify server.
 
-## Description
-
-Gotify Windows Client provides a lightweight desktop companion for Gotify. It keeps a live WebSocket connection to your Gotify server, shows notifications in the Windows notification area, and stores connection settings locally so you can reconnect quickly.
-
-## Development status and disclaimer
-
-This software is still under development and should be considered a functional draft. It runs on Windows 11 without issues, but the codebase still needs review and updates. Use it at your own risk: I am not responsible for vulnerabilities or security issues. Please review and keep the code up to date before relying on it in production.
-
 ## Features
 
 - ✅ WebSocket connection to Gotify
